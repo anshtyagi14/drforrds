@@ -547,22 +547,16 @@ Simplifies DR, quick and reliable recovery
 
 Can be costly, requires initial detailed setup
 
-Suggested
+## Suggested
 
-For high availability and no tolerance for downtime: The Multi-Site Active/Active strategy is ideal, despite its high cost and complexity, as it ensures maximum uptime and data availability across multiple locations.
-
-For moderate budgets and reasonable recovery times: The Warm Standby strategy strikes a balance between cost, complexity, and readiness, providing a practical solution for many medium to large businesses.
-
-For organisations looking for streamlined, automated recovery: AWS Elastic Disaster Recovery is highly recommended as it automates much of the recovery process, ensuring quick restoration with minimal manual intervention, though it may require a comprehensive initial setup and can be costlier than some simpler methods.
+- For high availability and no tolerance for downtime: The Multi-Site Active/Active strategy is ideal, despite its high cost and complexity, as it ensures maximum uptime and data availability across multiple locations.
+- For moderate budgets and reasonable recovery times: The Warm Standby strategy strikes a balance between cost, complexity, and readiness, providing a practical solution for many medium to large businesses.
+- For organisations looking for streamlined, automated recovery: AWS Elastic Disaster Recovery is highly recommended as it automates much of the recovery process, ensuring quick restoration with minimal manual intervention, though it may require a comprehensive initial setup and can be costlier than some simpler methods.
 
 Reference
 
-AWS DR Strategy - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html 
-
-AWS Backup - https://aws.amazon.com/getting-started/hands-on/amazon-rds-backup-restore-using-aws-backup/ 
-
-Tungsten Replicator - https://www.continuent.com/products/tungsten-replicator 
-
-SymmetricDS - https://symmetricds.org/ 
-
-ReplicaDB - https://github.com/osalvador/ReplicaDB 
+1. AWS DR Strategy - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html 
+2. AWS Backup - https://aws.amazon.com/getting-started/hands-on/amazon-rds-backup-restore-using-aws-backup/ 
+3. Tungsten Replicator - https://www.continuent.com/products/tungsten-replicator 
+4. SymmetricDS - https://symmetricds.org/ 
+5. ReplicaDB - https://github.com/osalvador/ReplicaDB 
