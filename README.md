@@ -1,72 +1,47 @@
-# drforrds
+# DR Strategy for RDS
 
-Index
-
-Backup and Restore (AWS DR Strategy)
-
-Pilot Light (AWS DR Strategy)
-
-Warm Standby (AWS DR Strategy)
-
-Multi-Site Active/Active (AWS DR Strategy)
-
-AWS Backup (AWS Service)
-
-AWS Data Migration Service (AWS Service) (POC 90% complete)
-
-Tungsten Replicator (Third Party)
-
-SymmetricDS (Open-Source)
-
-ReplicaDB (Open-Source)
-
-AWS Data Pipeline (AWS Service)
-
-Amazon Kinesis (AWS Service)
-
-AWS Lambda and S3 (AWS Service)
-
-AWS EC2 and S3 (AWS Service)
-
-AWS S3 and Glue (AWS Service)
-
-AWS Elastic Disaster Recovery (AWS DR Strategy)
+## Index
 
 1. Backup and Restore (AWS DR Strategy)
+2. Pilot Light (AWS DR Strategy)
+3. Warm Standby (AWS DR Strategy)
+4. Multi-Site Active/Active (AWS DR Strategy)
+5. AWS Backup (AWS Service)
+6. AWS Data Migration Service (AWS Service) (POC 90% complete)
+7. Tungsten Replicator (Third Party)
+8. SymmetricDS (Open-Source)
+9. ReplicaDB (Open-Source)
+10. AWS Data Pipeline (AWS Service)
+11. Amazon Kinesis (AWS Service)
+12. AWS Lambda and S3 (AWS Service)
+13. AWS EC2 and S3 (AWS Service)
+14. AWS S3 and Glue (AWS Service)
+15. AWS Elastic Disaster Recovery (AWS DR Strategy)
 
-Explanation
+## 1. Backup and Restore (AWS DR Strategy)
+
+### Explanation
 
 AWS RDS (Amazon Relational Database Service) offers built-in mechanisms to manage backups and restores, providing a robust foundation for a disaster recovery strategy. Here’s how you can use these features in AWS RDS:
+1. Automated Backups: AWS RDS automatically creates a backup of your database (snapshot of the entire DB instance) daily during a specified backup window. These backups include the database and logs needed to recover the database. By default, RDS retains these backups for a period (retention period) that you can set, with a maximum of 35 days.
+2. Manual Snapshots: In addition to automated backups, you can take manual snapshots of your RDS database at any point in time. These snapshots are user-initiated and are retained until explicitly deleted, providing more control over backup retention.
+3. Multi-Region Snapshots: For disaster recovery across different geographical locations, AWS allows you to copy snapshots to other regions. This is crucial if the primary region faces a disaster and ensures that the database can be restored in another region.
+4. Restoration: You can restore your database from both automated backups and manual snapshots. When restoring from a backup or a snapshot, AWS RDS creates a new instance of the database. You can specify the particular time to which you want your database restored using point-in-time recovery if you are using automated backups.
+5. Read Replicas: While technically a scalability feature, read replicas can serve as a part of a DR strategy. You can promote a read replica to be a standalone database in case of a primary DB instance failure.
 
-Automated Backups: AWS RDS automatically creates a backup of your database (snapshot of the entire DB instance) daily during a specified backup window. These backups include the database and logs needed to recover the database. By default, RDS retains these backups for a period (retention period) that you can set, with a maximum of 35 days.
+### Benefits
 
-Manual Snapshots: In addition to automated backups, you can take manual snapshots of your RDS database at any point in time. These snapshots are user-initiated and are retained until explicitly deleted, providing more control over backup retention.
+- Ease of Use: The automated and manual backups are easy to set up and manage through the AWS Management Console, CLI, or SDKs.
+- Reliability: AWS manages the underlying infrastructure, ensuring that backups are consistently taken and stored safely.
+- Flexibility: You can restore to any point within your backup retention period (up to the last five minutes with automated backups).
+- Global Deployment: Snapshots can be copied across AWS regions, allowing for global disaster recovery strategies and compliance with data residency requirements.
 
-Multi-Region Snapshots: For disaster recovery across different geographical locations, AWS allows you to copy snapshots to other regions. This is crucial if the primary region faces a disaster and ensures that the database can be restored in another region.
+### Drawbacks
 
-Restoration: You can restore your database from both automated backups and manual snapshots. When restoring from a backup or a snapshot, AWS RDS creates a new instance of the database. You can specify the particular time to which you want your database restored using point-in-time recovery if you are using automated backups.
-
-Read Replicas: While technically a scalability feature, read replicas can serve as a part of a DR strategy. You can promote a read replica to be a standalone database in case of a primary DB instance failure.
-
-Benefits
-
-Ease of Use: The automated and manual backups are easy to set up and manage through the AWS Management Console, CLI, or SDKs.
-
-Reliability: AWS manages the underlying infrastructure, ensuring that backups are consistently taken and stored safely.
-
-Flexibility: You can restore to any point within your backup retention period (up to the last five minutes with automated backups).
-
-Global Deployment: Snapshots can be copied across AWS regions, allowing for global disaster recovery strategies and compliance with data residency requirements.
-
-Drawbacks
-
-Cost: While automated backups are included in the cost of the RDS instance, manual snapshots and cross-region snapshot copies incur additional charges.
-
-Performance Impact: Backup processes, especially for large databases, can impact performance due to the additional load on RDS resources.
-
-Operational Complexity: Managing a multi-region DR strategy can become complex, involving careful planning regarding regions, data transfer costs, and compliance.
-
-Recovery Time: The time to restore from a backup depends on the size of the database. Large databases can take significant time to become fully operational after a restore.
+- Cost: While automated backups are included in the cost of the RDS instance, manual snapshots and cross-region snapshot copies incur additional charges.
+- Performance Impact: Backup processes, especially for large databases, can impact performance due to the additional load on RDS resources.
+- Operational Complexity: Managing a multi-region DR strategy can become complex, involving careful planning regarding regions, data transfer costs, and compliance.
+- Recovery Time: The time to restore from a backup depends on the size of the database. Large databases can take significant time to become fully operational after a restore.
 
 This backup and restore strategy provides a strong foundation for disaster recovery in AWS RDS, balancing ease of use with comprehensive data protection capabilities. However, it requires careful management, especially in terms of costs and recovery objectives.
 
