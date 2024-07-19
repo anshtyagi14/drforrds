@@ -419,133 +419,23 @@ Implementing AWS Elastic DR for AWS RDS is a strategic decision that depends on 
 
 ## Summary
 
-DR Strategy
-
-Key Features
-
-Benefits
-
-Drawbacks
-
-Backup and Restore
-
-Daily automated backups, manual snapshots
-
-Easy setup, reliable
-
-Can be slow to restore, higher RTO
-
-Pilot Light
-
-Minimal deployment always running
-
-Cost-efficient, quicker recovery than backup and restore
-
-Higher cost than backup alone, some setup complexity
-
-Warm Standby
-
-Full, operational secondary system, lower capacity
-
-Quick failover, high availability
-
-More expensive than Pilot Light
-
-Multi-Site Active/Active
-
-Fully operational at multiple sites
-
-Highest availability, load distribution
-
-Most expensive, complex setup
-
-AWS Backup
-
-Centralised backup management across AWS services
-
-Automates compliance, secure backups
-
-Costs, complex setup for specific needs
-
-AWS Data Migration Service
-
-Continuous replication, supports multiple DB engines
-
-Low latency, flexible
-
-Dependent on network, complex synchronisation
-
-Tungsten Replicator
-
-Real-time replication, complex topologies
-
-Robust, flexible across DB systems
-
-Setup complexity, operational overhead
-
-SymmetricDS
-
-Bi-directional replication, scalable
-
-Real-time synchronisation, high flexibility
-
-Configuration complexity, potential performance impact
-
-ReplicaDB
-
-Real-time CDC, lightweight and scalable
-
-Minimal overhead, real-time sync
-
-Network dependency, limited conflict resolution
-
-AWS Data Pipeline
-
-Automated data movement and processing
-
-Automation, integrates with AWS services
-
-Complexity in setup, slower recovery compared to replication
-
-Amazon Kinesis
-
-Real-time data streaming and processing
-
-Real-time processing, scalable
-
-Setup complexity, costs
-
-AWS Lambda and S3
-
-Automation via Lambda, durable storage with S3
-
-Cost-effective, highly scalable
-
-Complex setup, potentially slower RTO
-
-AWS EC2 and S3
-
-Use EC2 for operations, S3 for backup storage
-
-Flexible, control over process
-
-Operational overhead, complexity
-
-AWS S3 and Glue
-
-Use S3 for storage, Glue for data management
-
-Effective data management, automation
-
-Complex setup and maintenance, potential cost surprises
-
-AWS Elastic Disaster Recovery
-
-Automation of recovery and failback processes, point-in-time recovery
-
-Simplifies DR, quick and reliable recovery
-
-Can be costly, requires initial detailed setup
+| DR Strategy | Key Features | Benefits | Drawbacks |
+| --- | --- | --- | ---|
+| Backup and Restore | Daily automated backups, manual snapshots | Easy setup, reliable | Can be slow to restore, higher RTO |
+| Pilot Light | Minimal deployment always running | Cost-efficient, quicker recovery than backup and restore | Higher cost than backup alone, some setup complexity |
+| Warm Standby | Full, operational secondary system, lower capacity | Quick failover, high availability | More expensive than Pilot Light |
+| Multi-Site Active/Active | Fully operational at multiple sites | Highest availability, load distribution | Most expensive, complex setup |
+| AWS Backup | Centralised backup management across AWS services | Automates compliance, secure backups | Costs, complex setup for specific needs | 
+| AWS Data Migration Service | Continuous replication, supports multiple DB engines | Low latency, flexible | Dependent on network, complex synchronisation |
+| Tungsten Replicator | Real-time replication, complex topologies | Robust, flexible across DB systems | Setup complexity, operational overhead |
+| SymmetricDS | Bi-directional replication, scalable | Real-time synchronisation, high flexibility | Configuration complexity, potential performance impact |
+| ReplicaDB | Real-time CDC, lightweight and scalable | Minimal overhead, real-time sync | Network dependency, limited conflict resolution |
+| AWS Data Pipeline | Automated data movement and processing | Automation, integrates with AWS services | Complexity in setup, slower recovery compared to replication |
+| Amazon Kinesis | Real-time data streaming and processing | Real-time processing, scalable | Setup complexity, costs |
+| AWS Lambda and S3 | Automation via Lambda, durable storage with S3 | Cost-effective, highly scalable | Complex setup, potentially slower RTO |
+| AWS EC2 and S3 | Use EC2 for operations, S3 for backup storage | Flexible, control over process | Operational overhead, complexity |
+| AWS S3 and Glue | Use S3 for storage, Glue for data management | Effective data management, automation | Complex setup and maintenance, potential cost surprises |
+| AWS Elastic Disaster Recovery | Automation of recovery and failback processes, point-in-time recovery | Simplifies DR, quick and reliable recovery | Can be costly, requires initial detailed setup |
 
 ## Suggested
 
