@@ -45,117 +45,87 @@ AWS RDS (Amazon Relational Database Service) offers built-in mechanisms to manag
 
 This backup and restore strategy provides a strong foundation for disaster recovery in AWS RDS, balancing ease of use with comprehensive data protection capabilities. However, it requires careful management, especially in terms of costs and recovery objectives.
 
-2. Pilot Light (AWS DR Strategy)
+## 2. Pilot Light (AWS DR Strategy)
 
-Explanation
+### Explanation
 
 The "pilot light" approach is a commonly used disaster recovery strategy where a minimal version of an environment is always running in the cloud. Here’s how it works with AWS RDS:
+1. Minimal RDS Deployment: In this strategy, you maintain a minimal version of your production database in AWS. This typically involves having a smaller instance of the RDS database running in another region or availability zone.
+2. Replication: Data from the primary database is continuously replicated to the pilot light database. This can be achieved using RDS's built-in replication features. The pilot light database typically runs in a standby mode and is kept up to date with the primary database, ensuring data consistency.
+3. Scaling during Disaster: In the event of a disaster, the pilot light setup can be quickly scaled up to handle the full production load. This involves resizing the RDS instance to handle more traffic and ensuring that all configurations and dependencies are in place to support the production environment.
+4. Automation: The process of scaling up can be automated using AWS services such as AWS Lambda, Amazon CloudWatch, and AWS CloudFormation, which can monitor the primary site and automatically trigger the scaling of the pilot light environment when necessary.
 
-Minimal RDS Deployment: In this strategy, you maintain a minimal version of your production database in AWS. This typically involves having a smaller instance of the RDS database running in another region or availability zone.
+### Benefits
 
-Replication: Data from the primary database is continuously replicated to the pilot light database. This can be achieved using RDS's built-in replication features. The pilot light database typically runs in a standby mode and is kept up to date with the primary database, ensuring data consistency.
+- Quick Recovery Time: Since the core components of the system are always running, the time to recover is significantly reduced compared to other DR strategies that might require setting up from backups or snapshots.
+- Cost-Efficiency: The pilot light strategy can be more cost-effective than running a full-scale duplicate environment (like a "warm standby"). You only pay for a minimal setup under normal conditions.
+- Continuous Replication: Continuous data replication ensures that the pilot light system is always up-to-date, minimising data loss during a disaster.
+- Simplicity and Automation: The ability to automate the scaling process simplifies the recovery operation, reducing the potential for human error during critical periods.
 
-Scaling during Disaster: In the event of a disaster, the pilot light setup can be quickly scaled up to handle the full production load. This involves resizing the RDS instance to handle more traffic and ensuring that all configurations and dependencies are in place to support the production environment.
+### Drawbacks
 
-Automation: The process of scaling up can be automated using AWS services such as AWS Lambda, Amazon CloudWatch, and AWS CloudFormation, which can monitor the primary site and automatically trigger the scaling of the pilot light environment when necessary.
-
-Benefits
-
-Quick Recovery Time: Since the core components of the system are always running, the time to recover is significantly reduced compared to other DR strategies that might require setting up from backups or snapshots.
-
-Cost-Efficiency: The pilot light strategy can be more cost-effective than running a full-scale duplicate environment (like a "warm standby"). You only pay for a minimal setup under normal conditions.
-
-Continuous Replication: Continuous data replication ensures that the pilot light system is always up-to-date, minimising data loss during a disaster.
-
-Simplicity and Automation: The ability to automate the scaling process simplifies the recovery operation, reducing the potential for human error during critical periods.
-
-Drawbacks
-
-Cost vs. Full Standby: While cheaper than maintaining a full duplicate environment, it’s more expensive than having only backup snapshots due to the costs of running a continuously operating server and data replication.
-
-Complex Setup: Setting up and maintaining a pilot light scenario, especially with automation, can be complex and requires ongoing management and testing to ensure it functions as expected during a disaster.
-
-Partial Protection: The pilot light typically only keeps critical systems running, so additional time and resources may be needed to bring the entire system back to full operational capacity.
-
-Scalability Limits: Scaling from a minimal to a full-scale environment can sometimes encounter bottlenecks, especially if not regularly tested or if the differences in scale are substantial.
+- Cost vs. Full Standby: While cheaper than maintaining a full duplicate environment, it’s more expensive than having only backup snapshots due to the costs of running a continuously operating server and data replication.
+- Complex Setup: Setting up and maintaining a pilot light scenario, especially with automation, can be complex and requires ongoing management and testing to ensure it functions as expected during a disaster.
+- Partial Protection: The pilot light typically only keeps critical systems running, so additional time and resources may be needed to bring the entire system back to full operational capacity.
+- Scalability Limits: Scaling from a minimal to a full-scale environment can sometimes encounter bottlenecks, especially if not regularly tested or if the differences in scale are substantial.
 
 This DR strategy is well-suited for organisations that require a quick recovery time for critical applications but want to balance this with cost considerations. Regular testing and careful planning are essential to ensure that when needed, the pilot light can illuminate the path to a swift and efficient recovery.
 
-3. Warm Standby (AWS DR Strategy)
+## 3. Warm Standby (AWS DR Strategy)
 
-Explanation
+### Explanation
 
 A "warm standby" approach in disaster recovery involves maintaining a secondary system that runs simultaneously with the primary system but at a reduced capacity. For AWS RDS, this strategy implies having a backup RDS instance that is fully functional and can take over quickly if the primary instance fails. Here's how this strategy is typically implemented:
+1. Secondary RDS Instance: You deploy a secondary RDS instance in a different region or availability zone. This instance is smaller or runs fewer resources than the primary but is always operational and up-to-date.
+2. Data Replication: Continuous replication is set up from the primary to the secondary RDS instance. AWS RDS supports several replication options, including cross-region read replicas, which ensure that the standby system mirrors the primary system's data.
+3. Synchronisation: The secondary RDS instance is kept in sync with the primary instance, typically with only a slight lag, depending on the network and load. This ensures that the data in the warm standby is almost as current as the primary database.
+4. Failover Mechanism: In case of a disaster, the warm standby can be quickly promoted to become the primary database. AWS provides tools and services that can automate the failover process to reduce downtime and manual intervention.
 
-Secondary RDS Instance: You deploy a secondary RDS instance in a different region or availability zone. This instance is smaller or runs fewer resources than the primary but is always operational and up-to-date.
+### Benefits
 
-Data Replication: Continuous replication is set up from the primary to the secondary RDS instance. AWS RDS supports several replication options, including cross-region read replicas, which ensure that the standby system mirrors the primary system's data.
+- Quick Recovery: Since the standby system is always running, the failover and recovery time can be very quick, minimising downtime and disruption to services.
+- Reliability and High Availability: Continuous replication and synchronisation ensure high availability and data integrity, providing a reliable fallback in case of a disaster.
+- Simplified Testing: Testing the disaster recovery process is simpler because the standby system is operational and can be accessed and tested without impacting the primary system.
+- Cost-Effectiveness: While more expensive than a pilot light setup, it is typically more cost-effective than a fully active-active configuration, balancing cost with readiness.
 
-Synchronisation: The secondary RDS instance is kept in sync with the primary instance, typically with only a slight lag, depending on the network and load. This ensures that the data in the warm standby is almost as current as the primary database.
+### Drawbacks
 
-Failover Mechanism: In case of a disaster, the warm standby can be quickly promoted to become the primary database. AWS provides tools and services that can automate the failover process to reduce downtime and manual intervention.
-
-Benefits
-
-Quick Recovery: Since the standby system is always running, the failover and recovery time can be very quick, minimising downtime and disruption to services.
-
-Reliability and High Availability: Continuous replication and synchronisation ensure high availability and data integrity, providing a reliable fallback in case of a disaster.
-
-Simplified Testing: Testing the disaster recovery process is simpler because the standby system is operational and can be accessed and tested without impacting the primary system.
-
-Cost-Effectiveness: While more expensive than a pilot light setup, it is typically more cost-effective than a fully active-active configuration, balancing cost with readiness.
-
-Drawbacks
-
-Higher Costs than Pilot Light: Running a secondary, albeit smaller, database system continuously incurs additional costs for compute, storage, and data transfer, especially across regions.
-
-Complex Configuration and Maintenance: Keeping the warm standby synchronised and ensuring the replication integrity requires ongoing maintenance and monitoring, which can be complex.
-
-Potential Data Lag: Depending on the replication method and network conditions, there might be a slight lag in data synchronisation, which could result in minor data loss during a failover.
-
-Resource Scaling During Failover: If the standby system has significantly fewer resources than the primary, scaling up to meet the full production load during a failover can introduce challenges and delays.
+- Higher Costs than Pilot Light: Running a secondary, albeit smaller, database system continuously incurs additional costs for compute, storage, and data transfer, especially across regions.
+- Complex Configuration and Maintenance: Keeping the warm standby synchronised and ensuring the replication integrity requires ongoing maintenance and monitoring, which can be complex.
+- Potential Data Lag: Depending on the replication method and network conditions, there might be a slight lag in data synchronisation, which could result in minor data loss during a failover.
+- Resource Scaling During Failover: If the standby system has significantly fewer resources than the primary, scaling up to meet the full production load during a failover can introduce challenges and delays.
 
 Warm standby is an effective DR strategy for applications that require high availability and a quick failover with minimal disruption. It is particularly suitable for critical applications where downtime costs are significant. However, organisations must balance the costs and complexity of maintaining such a system against the potential risk of downtime. Regular testing and proper configuration management are essential to ensure the strategy's effectiveness when needed.
 
-4. Multi-Site Active/Active (AWS DR Strategy)
+## 4. Multi-Site Active/Active (AWS DR Strategy)
 
-Explanation
+### Explanation
 
 The Multi-Site Active/Active strategy is the most robust and resilient DR strategy. In this approach, the application is fully operational at more than one geographical location, and traffic is distributed across these locations, typically using load balancing techniques. Here's how this strategy can be implemented with AWS RDS:
+1. Multiple Active RDS Instances: Deploy RDS instances in multiple AWS regions or availability zones. Each instance operates independently, serving a portion of the overall traffic.
+2. Data Synchronisation: Use techniques like database replication to ensure that all RDS instances stay synchronised. AWS provides options like cross-region replication to manage this, though it might also be handled by custom database replication mechanisms depending on the specific requirements and database technology.
+3. Traffic Distribution: Use AWS Route 53 or other DNS services to manage traffic distribution across the different database instances. This might involve health checks and routing policies that direct users to the nearest or least loaded database instance.
+4. Failover and Failback: In the event of a failure at one site, traffic is automatically rerouted to other active sites, minimising downtime. Similarly, once the failed site is restored, traffic can be redirected back or balanced across all sites.
 
-Multiple Active RDS Instances: Deploy RDS instances in multiple AWS regions or availability zones. Each instance operates independently, serving a portion of the overall traffic.
+### Benefits
 
-Data Synchronisation: Use techniques like database replication to ensure that all RDS instances stay synchronised. AWS provides options like cross-region replication to manage this, though it might also be handled by custom database replication mechanisms depending on the specific requirements and database technology.
+- High Availability: With multiple active sites, the system is highly available and resilient to failures in any single location.
+- Load Distribution: Traffic can be distributed across multiple sites, which can improve performance during peak times and reduce the load on any single database instance.
+- No Downtime: The active/active configuration is designed to handle failures seamlessly, typically without any noticeable downtime to end-users.
+- Geographic Redundancy: Having multiple sites in different geographical locations also protects against region-specific disasters and can improve response times for geographically distributed users.
 
-Traffic Distribution: Use AWS Route 53 or other DNS services to manage traffic distribution across the different database instances. This might involve health checks and routing policies that direct users to the nearest or least loaded database instance.
+### Drawbacks
 
-Failover and Failback: In the event of a failure at one site, traffic is automatically rerouted to other active sites, minimising downtime. Similarly, once the failed site is restored, traffic can be redirected back or balanced across all sites.
-
-Benefits
-
-High Availability: With multiple active sites, the system is highly available and resilient to failures in any single location.
-
-Load Distribution: Traffic can be distributed across multiple sites, which can improve performance during peak times and reduce the load on any single database instance.
-
-No Downtime: The active/active configuration is designed to handle failures seamlessly, typically without any noticeable downtime to end-users.
-
-Geographic Redundancy: Having multiple sites in different geographical locations also protects against region-specific disasters and can improve response times for geographically distributed users.
-
-Drawbacks
-
-Complexity: Managing data consistency across multiple active databases and ensuring effective load balancing and synchronisation can be technically complex.
-
-Cost: This strategy involves higher costs due to running multiple fully operational database instances and the infrastructure needed for synchronisation and traffic management.
-
-Data Conflicts: In scenarios where databases need to write and replicate data in real-time across sites, resolving data conflicts can become a significant challenge.
-
-Latency: Depending on the distance between data centers and synchronisation methods, there might be latency issues that could affect application performance.
+- Complexity: Managing data consistency across multiple active databases and ensuring effective load balancing and synchronisation can be technically complex.
+- Cost: This strategy involves higher costs due to running multiple fully operational database instances and the infrastructure needed for synchronisation and traffic management.
+- Data Conflicts: In scenarios where databases need to write and replicate data in real-time across sites, resolving data conflicts can become a significant challenge.
+- Latency: Depending on the distance between data centers and synchronisation methods, there might be latency issues that could affect application performance.
 
 The Multi-Site Active/Active DR strategy for AWS RDS is most suitable for mission-critical applications where downtime cannot be tolerated and performance must be optimised across multiple geographic locations. While offering the highest level of redundancy and resilience, it demands considerable resources and management effort to implement and maintain effectively.
 
-5. AWS Backup (AWS Service)
+## 5. AWS Backup (AWS Service)
 
-Explanation
+### Explanation
 
 AWS Backup is a service designed to centralize and automate the backup of data across AWS services in the cloud. For AWS RDS, this strategy involves using AWS Backup to manage database backups, simplifying the process and ensuring compliance and consistency. Here’s how you can use AWS Backup with RDS:
 
@@ -169,7 +139,7 @@ Point-In-Time Recovery: AWS Backup supports point-in-time recovery of RDS instan
 
 Compliance and Security: AWS Backup provides a centralised way to comply with regulatory policies and to perform audits. It also includes encryption options to secure your backups.
 
-Benefits
+### Benefits
 
 Centralised Management: Centralizes the backup management of RDS with other AWS services, simplifying operations and compliance checks.
 
@@ -181,7 +151,7 @@ Security and Compliance: Helps meet regulatory compliance requirements with back
 
 Flexibility: Supports cross-account backup, allowing organisations to manage backups across different AWS accounts for enhanced security and operational flexibility.
 
-Drawbacks
+### Drawbacks
 
 Cost: While AWS Backup simplifies the backup process, it incurs additional costs based on the amount of data backed up, the storage used, and the data transfer involved, especially when using cross-region backups.
 
@@ -193,11 +163,11 @@ Performance Impact: Performing backups, especially frequent ones, can impact the
 
 The AWS Backup DR strategy for AWS RDS is an effective tool for organisations looking to simplify and standardize their backup processes across multiple AWS services. It offers a balance of automation, security, and central management, making it suitable for many scenarios, though it requires careful planning to align with specific business continuity requirements.
 
-6. AWS Data Migration Service (AWS Service) (POC 90% complete)
+## 6. AWS Data Migration Service (AWS Service) (POC 90% complete)
 
 POC Link - https://monotype.atlassian.net/wiki/pages/resumedraft.action?draftId=5041946650&draftShareId=09cda396-073c-46d1-b5fa-2c1433d8d4ae 
 
-Explanation
+### Explanation
 
 AWS Database Migration Service (DMS) is primarily used for migrating databases to AWS securely and efficiently, but it can also serve as an important component in a disaster recovery (DR) strategy for AWS RDS. Using AWS DMS in a DR context involves continuously replicating data from your primary RDS database to a secondary database, either on AWS or on-premises. Here’s how it works:
 
@@ -209,7 +179,7 @@ Multi-Engine Support: DMS supports various database engines, which allows for re
 
 Monitoring and Management: AWS provides tools to monitor the health and performance of the replication tasks. You can set up alerts and automate responses to potential replication issues or failures.
 
-Benefits
+### Benefits
 
 Flexibility: AWS DMS supports a wide range of source and target databases, providing flexibility in terms of database platforms. You are not locked into using RDS both as a source and a target; you can replicate data to and from other database services.
 
@@ -219,7 +189,7 @@ Ease of Setup and Use: DMS is designed to simplify the setup process. It provide
 
 Minimal Performance Impact: Since DMS is designed for efficient data transfer, the impact on the source database’s performance is generally minimal, which is critical for production environments.
 
-Drawbacks
+### Drawbacks
 
 Dependency on Network: DMS’s performance and efficiency heavily depend on network conditions. Poor connectivity or bandwidth limitations can cause delays in replication and affect the currency of the data in the DR site.
 
@@ -231,9 +201,9 @@ Operational Overhead: While DMS simplifies many aspects of replication, it still
 
 The AWS DMS DR strategy for AWS RDS is particularly suitable for scenarios where database migration capabilities are also desirable, and there is a need for a robust yet flexible DR solution. This strategy allows businesses to ensure data redundancy and maintain operational continuity with relatively low latency and costs. However, it does require careful planning and monitoring to address potential risks associated with data synchronisation and network dependencies.
 
-7. Tungsten Replicator (Third Party)
+## 7. Tungsten Replicator (Third Party)
 
-Explanation
+### Explanation
 
 Tungsten Replicator is a high-performance, open-source, data replication engine for MySQL, MariaDB, and Percona Server databases. It offers capabilities for real-time replication and can be used effectively as part of a disaster recovery (DR) strategy for databases hosted on AWS RDS. Here’s how the Tungsten Replicator DR strategy can be implemented:
 
@@ -245,7 +215,7 @@ Flexible Topologies: Tungsten Replicator supports various replication topologies
 
 Data Filtering and Transformation: It can filter and transform the data streams at runtime. This feature is useful in scenarios where not all data needs to be replicated or when data needs to be modified before being applied to the secondary database.
 
-Benefits
+### Benefits
 
 High Availability and Robustness: Tungsten Replicator ensures high availability through continuous replication, making it a robust choice for critical systems that cannot afford downtime.
 
@@ -255,7 +225,7 @@ Low Latency: The replicator is designed to minimize latency, providing near-real
 
 Scalability: Supports scaling operations and can handle large volumes of data and high transaction rates without significant performance degradation.
 
-Drawbacks
+### Drawbacks
 
 Complexity in Setup and Management: Setting up Tungsten Replicator can be complex, especially in environments with multiple databases or complex topologies. It requires a good understanding of both the source and target database systems.
 
@@ -267,9 +237,9 @@ AWS Integration: Since it's not a native AWS service, integration with AWS RDS m
 
 The Tungsten Replicator DR strategy for AWS RDS is well-suited for organisations that use MySQL, MariaDB, or Percona Server and need a flexible, robust replication solution that supports complex topologies and real-time replication. However, the benefits of its powerful and flexible replication capabilities come with the trade-offs of complexity and operational overhead. It’s an excellent choice for teams with strong database and network management skills who require a high degree of customisation and control over their replication and disaster recovery processes.
 
-8. SymmetricDS (Open-Source)
+## 8. SymmetricDS (Open-Source)
 
-Explanation
+### Explanation
 
 SymmetricDS is a data replication and synchronisation tool that supports multiple database platforms, making it versatile for various applications, including disaster recovery (DR) for AWS RDS. It can be used to synchronise data across RDS instances or between RDS and other database systems, either on-premises or in different cloud environments. Here’s how SymmetricDS can be integrated into a DR strategy for AWS RDS:
 
@@ -281,7 +251,7 @@ Continuous Synchronisation: It captures changes continuously through database tr
 
 Conflict Management: In multi-master replication scenarios, conflicts may arise when the same data is modified in different locations at the same time. SymmetricDS includes conflict detection and resolution strategies that can be configured to handle these situations automatically.
 
-Benefits
+### Benefits
 
 Platform Independence: SymmetricDS works with a wide range of database systems, providing flexibility in choosing or changing database platforms without changing the DR strategy.
 
@@ -291,7 +261,7 @@ High Availability: With support for bi-directional replication, it allows for ro
 
 Scalability: It is capable of handling large-scale deployments and can efficiently manage synchronisation across multiple nodes, which is ideal for growing enterprises.
 
-Drawbacks
+### Drawbacks
 
 Complex Configuration: Setting up SymmetricDS, especially in complex topologies with bi-directional replication, can be complicated and requires a deep understanding of the tool and the underlying database behaviours.
 
@@ -303,9 +273,9 @@ Conflict Resolution Complexity: While it provides mechanisms for conflict resolu
 
 The SymmetricDS DR strategy for AWS RDS is well-suited for environments that require robust, real-time synchronisation across diverse database platforms. It's particularly beneficial for organisations that need an active-active DR setup with complex replication needs. However, the benefits come with challenges related to complexity in setup and potential performance impacts, making it essential for organisations to evaluate their capacity to manage and maintain such a system effectively.
 
-9. ReplicaDB (Open-Source)
+## 9. ReplicaDB (Open-Source)
 
-Explanation
+### Explanation
 
 ReplicaDB is a tool designed for efficient database replication, supporting various database systems including AWS RDS. It is particularly useful for real-time data integration and synchronisation, making it a viable option for disaster recovery (DR) strategies. Here’s how ReplicaDB can be deployed as part of a DR strategy for AWS RDS:
 
@@ -317,7 +287,7 @@ Scalable and Lightweight: The tool is designed to be lightweight and scalable, w
 
 Customisable Replication: ReplicaDB allows for customisation of the replication process, including selective table replication and transformation of data during replication, to suit specific DR needs and optimize performance.
 
-Benefits
+### Benefits
 
 Real-Time Synchronisation: Provides near-real-time replication which minimizes data loss and ensures that backup systems are up-to-date with the primary system.
 
@@ -327,7 +297,7 @@ Low Overhead: Designed to be efficient and lightweight, imposing minimal overhea
 
 Easy to Set Up and Use: ReplicaDB is relatively straightforward to configure and use, making it accessible for teams without deep expertise in database administration.
 
-Drawbacks
+### Drawbacks
 
 Dependency on Network Performance: Like any real-time replication tool, its performance heavily relies on network conditions. Poor connectivity can lead to delays in replication and potential data inconsistencies.
 
@@ -339,9 +309,9 @@ Resource Utilisation: Although designed to be lightweight, intense replication t
 
 ReplicaDB offers a practical and efficient approach to DR for AWS RDS, particularly suited for scenarios where real-time data replication is crucial. It allows organisations to maintain high availability and data consistency across distributed database systems. However, careful planning and management are required to address potential challenges related to network dependencies and conflict resolution.
 
-10. AWS Data Pipeline (AWS Service)
+## 10. AWS Data Pipeline (AWS Service)
 
-Explanation
+### Explanation
 
 AWS Data Pipeline is a web service designed to facilitate the processing and movement of data between different AWS compute and storage services. When utilized for disaster recovery (DR) with AWS RDS, AWS Data Pipeline can automate the movement of data to other locations, ensuring data availability and facilitating quick recovery. Here’s how it can be implemented:
 
@@ -353,7 +323,7 @@ Cross-Region Replication: Use Data Pipeline to facilitate cross-region replicati
 
 Scheduling and Orchestration: AWS Data Pipeline allows for the scheduling of these tasks based on a defined interval (daily, weekly, etc.), or in response to specific triggers, ensuring that backups are created and moved according to the organization’s recovery point objectives (RPO).
 
-Benefits
+### Benefits
 
 Automation: Offers a high degree of automation, reducing the manual effort required to manage and execute backups and data transfers.
 
@@ -363,7 +333,7 @@ Reliability: Leverages AWS’s robust infrastructure to ensure that data handlin
 
 Cost-Effective: Potentially more cost-effective than more complex solutions like continuous replication, especially for businesses that can tolerate some data loss (within the bounds of their RPO).
 
-Drawbacks
+### Drawbacks
 
 Complexity in Setup: Configuring AWS Data Pipeline can be complex, especially when creating multi-step workflows that involve data processing and transfer across multiple services.
 
@@ -375,9 +345,9 @@ Maintenance: Requires ongoing monitoring and maintenance to ensure that the pipe
 
 The AWS Data Pipeline DR strategy for AWS RDS is effective for organizations that already rely heavily on AWS services and can integrate well into their existing infrastructure. It offers a methodical approach to managing backups and data workflows, providing automation and reliability but does require careful planning and management to ensure that it meets the specific DR requirements of the business.
 
-11. Amazon Kinesis (AWS Service)
+## 11. Amazon Kinesis (AWS Service)
 
-Explanation
+### Explanation
 
 Amazon Kinesis is primarily a platform for collecting, processing, and analysing real-time, streaming data. However, it can also play a role in a disaster recovery (DR) strategy for AWS RDS by facilitating the real-time replication of transaction logs or changes to a secondary system. Here's how Amazon Kinesis can be used in this context:
 
@@ -389,7 +359,7 @@ Data Processing and Transformation: Amazon Kinesis allows for the processing and
 
 Automated Monitoring and Scaling: Kinesis streams can be monitored and automatically scaled to handle varying volumes of data, ensuring that data flow does not become a bottleneck in the DR strategy.
 
-Benefits
+### Benefits
 
 Real-Time Replication: Kinesis facilitates near real-time data replication, which minimizes data loss in the event of a disaster.
 
@@ -399,7 +369,7 @@ Flexibility: The data processed and streamed by Kinesis can be directed to multi
 
 Integration with AWS Ecosystem: Kinesis is tightly integrated with other AWS services, allowing for a seamless setup of complex workflows involving AWS Lambda, Amazon S3, Amazon Redshift, etc.
 
-Drawbacks
+### Drawbacks
 
 Complexity: Setting up a DR strategy using Amazon Kinesis can be complex, particularly in terms of configuring the data capture, transformation, and replication processes.
 
@@ -411,9 +381,9 @@ Latency Concerns: While near real-time, there is still inherent latency in strea
 
 Amazon Kinesis as part of a DR strategy for AWS RDS is most effective for scenarios where real-time data replication is critical and where businesses can benefit from additional data processing and analytics during replication. This approach requires careful planning and skilled management to balance the benefits of real-time data availability against the complexities and costs involved.
 
-12. AWS Lambda and S3 (AWS Service)
+## 12. AWS Lambda and S3 (AWS Service)
 
-Explanation
+### Explanation
 
 Combining AWS Lambda with Amazon S3 offers a flexible and scalable approach to implementing a disaster recovery (DR) strategy for AWS RDS. This method primarily involves using AWS Lambda to automate the process of backing up RDS snapshots to Amazon S3, and potentially, managing the replication to other regions or systems. Here's how it works:
 
@@ -425,7 +395,7 @@ Data Restoration: In the event of a disaster, you can use the stored snapshots i
 
 Automation and Orchestration: Lambda provides the automation framework, while S3 provides the scalability and durability of backup storage. This combination allows for a highly customisable and automated DR solution that can scale with the needs of the business.
 
-Benefits
+### Benefits
 
 Cost-Efficiency: AWS Lambda and S3 are cost-effective services. You only pay for the storage used in S3 and for the execution time of the Lambda functions, which can be less expensive than other DR solutions.
 
@@ -435,7 +405,7 @@ High Durability and Availability: Amazon S3 offers high durability (99.999999999
 
 Automation: Automating snapshot creation, copying, and restoration processes using Lambda reduces manual efforts and human errors, making the DR process more reliable and efficient.
 
-Drawbacks
+### Drawbacks
 
 Complexity in Setup: Setting up AWS Lambda functions to correctly manage RDS snapshots, copy them to S3, and handle cross-region replication requires careful planning and configuration, which can be complex.
 
@@ -447,9 +417,9 @@ Limited Control Over the Environment: Using managed services like Lambda and S3 
 
 The AWS Lambda and S3 DR strategy for AWS RDS is an effective solution for organizations looking to leverage cloud automation for disaster recovery. It balances cost, scalability, and automation but requires a good handle on AWS services and careful management to ensure it meets all DR requirements effectively.
 
-13. AWS EC2 and S3 (AWS Service)
+## 13. AWS EC2 and S3 (AWS Service)
 
-Explanation
+### Explanation
 
 Utilising Amazon EC2 (Elastic Compute Cloud) and Amazon S3 (Simple Storage Service) for a disaster recovery (DR) strategy provides a robust method to backup and restore AWS RDS databases. This approach involves using EC2 instances to perform database operations and S3 to store backup data securely. Here's a detailed breakdown of how this strategy works:
 
@@ -461,7 +431,7 @@ Automation with EC2: Use scripts or automation tools running on EC2 instances to
 
 Data Restoration: In the event of a disaster, use the data stored in S3 to restore the RDS database either in the original region or a different one. EC2 instances can be used to facilitate the restoration process, scaling up resources as needed to expedite the operation.
 
-Benefits
+### Benefits
 
 Cost-Effectiveness: Using EC2 and S3 for DR can be cost-effective, especially when leveraging reserved or spot instances for the EC2 resources and using lifecycle policies to manage S3 storage costs.
 
@@ -471,7 +441,7 @@ High Durability and Availability: Amazon S3 provides high durability (11 nines) 
 
 Scalability: Both EC2 and S3 scale to meet demand. EC2 instances can be adjusted based on workload, and S3 can handle an enormous amount of data.
 
-Drawbacks
+### Drawbacks
 
 Complexity: Managing this type of DR strategy involves setting up, maintaining, and monitoring scripts and operations on EC2, which can add complexity and require specialized skills.
 
@@ -483,9 +453,9 @@ Data Transfer Costs: Transferring large amounts of data between RDS, EC2, and S3
 
 The AWS EC2 and S3 DR strategy for AWS RDS is well-suited for organisations that require detailed control over their backup processes and are capable of managing the complexities associated with custom scripted solutions. This approach offers a high degree of flexibility and reliability, but it demands careful planning, skilled management, and ongoing maintenance to ensure its effectiveness in a disaster recovery scenario.
 
-14. AWS S3 and Glue (AWS Service)
+## 14. AWS S3 and Glue (AWS Service)
 
-Explanation
+### Explanation
 
 Combining Amazon S3 (Simple Storage Service) and AWS Glue provides a powerful and flexible disaster recovery (DR) strategy for AWS RDS. This approach leverages S3 for secure, durable data storage and AWS Glue for data cataloging and transformation. Here’s how this strategy can be implemented:
 
@@ -499,7 +469,7 @@ Restoration Process: When it's time to restore the data to RDS, either in the or
 
 Automation and Orchestration: Use AWS Glue workflows to automate and orchestrate the entire process, from data backup to transformation, ensuring that the DR strategy is executed consistently and efficiently.
 
-Benefits
+### Benefits
 
 Scalability and Flexibility: This strategy leverages the scalability of S3 for data storage and the flexibility of AWS Glue for handling different data formats and transformations, suitable for large-scale and complex databases.
 
@@ -509,7 +479,7 @@ Automation of DR Processes: AWS Glue provides capabilities to automate many of t
 
 Cost-Effectiveness: Storing data in S3 can be cost-effective, especially when using storage classes like S3 Standard-IA (Infrequent Access) or S3 Glacier for long-term backup.
 
-Drawbacks
+### Drawbacks
 
 Complexity in Setup and Maintenance: Setting up and maintaining a DR strategy using AWS S3 and Glue can be complex, requiring expertise in both services to ensure effective integration and operation.
 
@@ -521,9 +491,9 @@ Potential Cost Surprises: While typically cost-effective, unexpected charges can
 
 The AWS S3 and Glue DR strategy for AWS RDS is well-suited for organisations looking for a robust, scalable solution capable of handling complex data structures and transformations. It is ideal for businesses that need comprehensive data management and transformation capabilities as part of their disaster recovery planning. However, this strategy requires significant setup and ongoing management to ensure it meets the desired recovery objectives.
 
-15. AWS Elastic Disaster Recovery (AWS DR Strategy)
+## 15. AWS Elastic Disaster Recovery (AWS DR Strategy)
 
-Explanation
+### Explanation
 
 AWS Elastic Disaster Recovery (DR) is a service designed to help businesses quickly recover their critical systems on AWS after a disaster. When it comes to Amazon Relational Database Service (RDS), which manages relational databases in the cloud, implementing a disaster recovery strategy involves several key steps:
 
@@ -537,7 +507,7 @@ Monitoring and Alerts: Continuous monitoring and alerts are crucial. AWS provide
 
 Testing and Validation: Regularly testing the disaster recovery setup is vital to ensure that it will function as intended during an actual disaster. AWS Elastic DR supports testing without impacting the primary workload.
 
-Benefits
+### Benefits
 
 Reduced Downtime: Elastic DR can significantly minimize downtime during a disaster by ensuring that there is always a live, up-to-date replica of the database ready to take over.
 
@@ -549,7 +519,7 @@ Simplicity: The service simplifies the complexity associated with setting up and
 
 Global Reach: With AWS regions all over the world, businesses can set up disaster recovery systems in geographically distant locations, enhancing their ability to recover from regional disruptions.
 
-Drawbacks
+### Drawbacks
 
 Cost: While it can be cost-effective compared to traditional DR methods, the cost of running replication and maintaining multiple instances can still be significant, especially for large databases or high-throughput applications.
 
